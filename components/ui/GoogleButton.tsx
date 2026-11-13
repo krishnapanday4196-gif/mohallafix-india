@@ -6,11 +6,15 @@ import { Loader2 } from "lucide-react";
 
 interface GoogleButtonProps {
   label?: string;
+  next?: string;
+  role?: string;
   onError?: (msg: string) => void;
 }
 
 export function GoogleButton({
   label = "Continue with Google",
+  next = "/citizen",
+  role = "citizen",
   onError,
 }: GoogleButtonProps) {
   const [loading, setLoading] = useState(false);
@@ -26,7 +30,7 @@ export function GoogleButton({
     try {
       setLoading(true);
       const supabase = createClient();
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&role=${encodeURIComponent(role)}`;
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",

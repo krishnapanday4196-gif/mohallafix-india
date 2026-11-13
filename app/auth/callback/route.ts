@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const next = requestUrl.searchParams.get("next") || "/citizen";
+  const roleParam = requestUrl.searchParams.get("role");
 
   const forwardedHost = request.headers.get("x-forwarded-host");
   const isLocalEnv = process.env.NODE_ENV === "development";
@@ -17,7 +18,12 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      // Auto-create or sync citizen profile
+      const targetRole =
+        roleParam === "officer" || next.startsWith("/officer")
+          ? "officer"
+          : "citizen";
+
+      // Auto-create or sync profile
       try {
         await supabase.from("profiles").upsert({
           user_id: data.user.id,
@@ -25,11 +31,30 @@ export async function GET(request: NextRequest) {
             data.user.user_metadata?.full_name ||
             data.user.user_metadata?.name ||
             data.user.email?.split("@")[0] ||
-            "Citizen",
+            (targetRole === "officer" ? "Nodal Officer" : "Citizen"),
           email: data.user.email || "",
-          role: "citizen",
+          role: targetRole,
           avatar_url: data.user.user_metadata?.avatar_url || null,
         });
+
+        if (targetRole === "officer") {
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("user_id", data.user.id)
+            .maybeSingle();
+
+          if (prof?.id) {
+            await supabase.from("officers").upsert(
+              {
+                profile_id: prof.id,
+                badge_number: `OFF-${data.user.id.substring(0, 6).toUpperCase()}`,
+                is_active: true,
+              },
+              { onConflict: "profile_id" }
+            );
+          }
+        }
       } catch (profileErr) {
         console.warn("Profile upsert during OAuth skipped:", profileErr);
       }
