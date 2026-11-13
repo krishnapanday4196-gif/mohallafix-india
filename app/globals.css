@@ -14,12 +14,16 @@
   --ring: #10b981;
 }
 
+html,
 body {
+  max-width: 100vw;
+  overflow-x: hidden;
   background-color: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
 }
 
 /* Leaflet map styles */

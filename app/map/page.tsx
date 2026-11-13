@@ -206,7 +206,7 @@ export default function PublicMapPage() {
                   center={userLocation || [28.6139, 77.209]}
                   selectedLocation={userLocation}
                   zoom={userLocation ? 15 : 5}
-                  height="520px"
+                  height="400px"
                   onSelectComplaint={(c) => setSelectedComplaint(c)}
                 />
 

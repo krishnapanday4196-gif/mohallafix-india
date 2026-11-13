@@ -37,8 +37,8 @@ export default async function CitizenDashboardPage() {
           </p>
         </div>
 
-        <Link href="/citizen/submit">
-          <Button variant="outline" size="md" className="bg-white text-emerald-800 hover:bg-emerald-50 font-bold shrink-0">
+        <Link href="/citizen/submit" className="w-full sm:w-auto">
+          <Button variant="outline" size="md" className="bg-white text-emerald-800 hover:bg-emerald-50 font-bold w-full sm:w-auto justify-center">
             <PlusCircle className="w-4 h-4 mr-1 text-emerald-600" />
             File New Grievance
           </Button>

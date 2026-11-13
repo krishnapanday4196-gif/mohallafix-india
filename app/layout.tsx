@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-16 md:pb-0 font-sans bg-[#f8fafc] text-slate-900 selection:bg-emerald-500/20">
+      <body className="min-h-full flex flex-col pb-20 md:pb-0 font-sans bg-[#f8fafc] text-slate-900 selection:bg-emerald-500/20">
         <InstallAppPrompt />
         {children}
         <MobileBottomNav />

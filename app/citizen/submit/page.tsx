@@ -356,7 +356,7 @@ export default function SubmitComplaintPage() {
           )}
 
           {/* Section 1: Photographic / Video Evidence */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
@@ -420,7 +420,7 @@ export default function SubmitComplaintPage() {
           </div>
 
           {/* Section 2: Details & Category */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-emerald-600" /> Grievance Specifics
             </h3>
@@ -499,7 +499,7 @@ export default function SubmitComplaintPage() {
           </div>
 
           {/* Section 3: Location & Coordinates */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
@@ -648,17 +648,17 @@ export default function SubmitComplaintPage() {
           </div>
 
           {/* Submit Action Button */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-2">
+            <div className="flex items-start sm:items-center gap-2">
               <input
                 type="checkbox"
                 id="isPublic"
                 checked={isPublic}
                 onChange={(e) => setIsPublic(e.target.checked)}
-                className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 mt-0.5 sm:mt-0"
               />
-              <label htmlFor="isPublic" className="text-xs text-slate-700 font-medium">
-                Make complaint visible on public map & complaints feed
+              <label htmlFor="isPublic" className="text-xs text-slate-700 font-medium cursor-pointer">
+                Make complaint visible on public map &amp; complaints feed
               </label>
             </div>
 
@@ -667,7 +667,7 @@ export default function SubmitComplaintPage() {
               variant="primary"
               size="lg"
               isLoading={submitting}
-              className="gap-2 shadow-sm"
+              className="gap-2 shadow-sm w-full sm:w-auto justify-center"
             >
               Submit Complaint
               <ArrowRight className="w-4 h-4" />

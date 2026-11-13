@@ -57,17 +57,17 @@ export default async function HomePage() {
           </p>
 
           {/* Quick Tracking Input Bar */}
-          <div className="max-w-xl mx-auto mb-10">
-            <form action="/track" method="GET" className="relative flex items-center shadow-sm">
+          <div className="max-w-xl mx-auto mb-8 sm:mb-10 px-1 sm:px-0">
+            <form action="/track" method="GET" className="relative flex items-center shadow-xs">
               <input
                 type="text"
                 name="id"
-                placeholder="Enter Complaint Tracking ID (e.g. MHF-20261113-ABCD)..."
-                className="w-full h-13 pl-4 pr-32 rounded-2xl border border-slate-300 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                placeholder="Enter Complaint Tracking ID..."
+                className="w-full h-12 sm:h-13 pl-3.5 sm:pl-4 pr-24 sm:pr-32 rounded-2xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
               />
               <button
                 type="submit"
-                className="absolute right-2 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
+                className="absolute right-1.5 sm:right-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 Track Now
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -76,21 +76,21 @@ export default async function HomePage() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3.5">
-            <Link href="/citizen/submit">
-              <Button size="lg" variant="primary" className="shadow-md">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto">
+            <Link href="/citizen/submit" className="w-full sm:w-auto">
+              <Button size="lg" variant="primary" className="shadow-md w-full justify-center">
                 File a Civic Grievance
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link href="/map">
-              <Button size="lg" variant="outline">
+            <Link href="/map" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full justify-center">
                 <MapPin className="w-4 h-4 text-emerald-600" />
                 Explore Public Map
               </Button>
             </Link>
-            <Link href="/ai">
-              <Button size="lg" variant="secondary" className="gap-2">
+            <Link href="/ai" className="w-full sm:w-auto">
+              <Button size="lg" variant="secondary" className="gap-2 w-full justify-center">
                 <Sparkles className="w-4 h-4 text-teal-600" />
                 AI Intelligence Hub
               </Button>

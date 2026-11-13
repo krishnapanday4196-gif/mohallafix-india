@@ -99,7 +99,7 @@ export function Sidebar({ portalType }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "relative bg-white border-r border-slate-200/90 flex flex-col transition-all duration-300 z-30 shrink-0",
+        "hidden md:flex relative bg-white border-r border-slate-200/90 flex-col transition-all duration-300 z-30 shrink-0",
         collapsed ? "w-20" : "w-64"
       )}
     >
