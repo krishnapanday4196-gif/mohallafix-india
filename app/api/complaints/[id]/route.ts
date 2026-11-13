@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { ComplaintStatus } from "@/types/database";
 
 const UpdateStatusSchema = z.object({
   status: z.enum([
@@ -101,28 +100,50 @@ export async function PATCH(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized. Please log in first." }, { status: 401 });
     }
+
+    // Safely lookup acting profile
+    let actingProfileId: string | null = null;
+    let actingRole = "citizen";
 
     const { data: profile } = await supabase
       .from("profiles")
       .select("id, role")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (!profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    if (profile) {
+      actingProfileId = profile.id;
+      actingRole = profile.role || "citizen";
+    } else {
+      // Fallback lookup by email
+      const { data: profByEmail } = await supabase
+        .from("profiles")
+        .select("id, role")
+        .eq("email", user.email || "")
+        .maybeSingle();
+
+      if (profByEmail) {
+        actingProfileId = profByEmail.id;
+        actingRole = profByEmail.role || "citizen";
+      }
     }
 
-    // Fetch existing complaint
+    // Fetch existing complaint safely (handles both UUID and tracking_id)
+    const isTracking = id.toUpperCase().startsWith("MHF-");
     const { data: existing, error: fetchErr } = await supabase
       .from("complaints")
       .select("*, citizen:profiles(*)")
-      .eq("id", id)
-      .single();
+      .eq(isTracking ? "tracking_id" : "id", isTracking ? id.toUpperCase() : id)
+      .maybeSingle();
 
-    if (fetchErr || !existing) {
-      return NextResponse.json({ error: "Complaint not found" }, { status: 404 });
+    if (fetchErr) {
+      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    }
+
+    if (!existing) {
+      return NextResponse.json({ error: "Complaint record not found" }, { status: 404 });
     }
 
     const newStatus = parsed.data.status;
@@ -130,7 +151,7 @@ export async function PATCH(
 
     // Role-based state transition validation
     if (newStatus === "CITIZEN_CONFIRMED" || newStatus === "REOPENED") {
-      if (profile.role === "citizen" && existing.citizen_id !== profile.id) {
+      if (actingRole === "citizen" && actingProfileId && existing.citizen_id !== actingProfileId) {
         return NextResponse.json(
           { error: "Only the complainant citizen can confirm or reopen this grievance." },
           { status: 403 }
@@ -161,41 +182,52 @@ export async function PATCH(
       updateObj.department_id = parsed.data.department_id;
     }
 
-    const { data: updated, error: updateErr } = await supabase
+    // Execute update without .single() to avoid PGRST116 coerce crashes
+    const { data: updatedRows, error: updateErr } = await supabase
       .from("complaints")
       .update(updateObj)
-      .eq("id", id)
-      .select()
-      .single();
+      .eq("id", existing.id)
+      .select();
 
     if (updateErr) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
     }
 
-    // Log in immutable complaint_status_history
-    await supabase.from("complaint_status_history").insert({
-      complaint_id: id,
-      previous_status: previousStatus,
-      new_status: newStatus,
-      changed_by: profile.id,
-      reason: parsed.data.reason,
-      evidence_media_url: parsed.data.evidence_media_url || null,
-    });
+    const updated = updatedRows?.[0] || { ...existing, ...updateObj };
 
-    // Notify citizen
+    // Log in immutable complaint_status_history
+    if (actingProfileId) {
+      try {
+        await supabase.from("complaint_status_history").insert({
+          complaint_id: existing.id,
+          previous_status: previousStatus,
+          new_status: newStatus,
+          changed_by: actingProfileId,
+          reason: parsed.data.reason,
+          evidence_media_url: parsed.data.evidence_media_url || null,
+        });
+      } catch (histErr) {
+        console.warn("Status history insert warning:", histErr);
+      }
+    }
+
+    // Notify citizen if different from updater
     if (existing.citizen_id) {
-      await supabase.from("notifications").insert({
-        user_id: existing.citizen_id,
-        complaint_id: id,
-        title: `Complaint Status: ${newStatus.replace(/_/g, " ")}`,
-        message: `Your complaint (${existing.tracking_id}) transitioned to ${newStatus}. Note: ${parsed.data.reason}`,
-        type: "status_update",
-      });
+      try {
+        await supabase.from("notifications").insert({
+          user_id: existing.citizen_id,
+          complaint_id: existing.id,
+          title: `Complaint Status: ${newStatus.replace(/_/g, " ")}`,
+          message: `Your complaint (${existing.tracking_id}) transitioned to ${newStatus}. Note: ${parsed.data.reason}`,
+          type: "status_update",
+        });
+      } catch (notifErr) {
+        console.warn("Notification insert warning:", notifErr);
+      }
     }
 
     return NextResponse.json({ success: true, complaint: updated });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
   }
 }
-

@@ -34,8 +34,16 @@ export default function OfficerResolveComplaintPage({
     setSelectedFile(file);
     const objUrl = URL.createObjectURL(file);
     setPreviewUrl(objUrl);
-    setResolutionPhotoUrl(objUrl);
     setErrorMsg("");
+
+    // Convert to base64 DataURL for persistent database storage
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") {
+        setResolutionPhotoUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleResolve = async (e: React.FormEvent) => {
@@ -61,7 +69,7 @@ export default function OfficerResolveComplaintPage({
         body: JSON.stringify({
           status: "RESOLVED",
           reason: `Resolution Completed: ${resolutionNotes}`,
-          evidence_media_url: previewUrl || resolutionPhotoUrl,
+          evidence_media_url: resolutionPhotoUrl || previewUrl,
         }),
       });
 
