@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { InstallAppPrompt } from "@/components/ui/InstallAppPrompt";
 
