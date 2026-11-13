@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient, createPublicSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import {
@@ -39,7 +39,7 @@ export async function fetchCategories(): Promise<ComplaintCategory[]> {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data, error } = await supabase
       .from("complaint_categories")
       .select("*, department:departments(*)")
@@ -61,7 +61,7 @@ export async function fetchDepartments(): Promise<Department[]> {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data, error } = await supabase
       .from("departments")
       .select("*")
@@ -89,7 +89,7 @@ export async function fetchPublicComplaints(filters?: {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     let query = supabase
       .from("complaints")
       .select(`
@@ -131,7 +131,7 @@ export async function fetchComplaintByIdOrTracking(idOrTracking: string): Promis
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const isTracking = idOrTracking.toUpperCase().startsWith("MHF-");
 
     const query = supabase
@@ -179,7 +179,7 @@ export async function getAnalyticsMetrics() {
   }
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data: complaints, error } = await supabase
       .from("complaints")
       .select("status, category:complaint_categories(name), department:departments(name)");

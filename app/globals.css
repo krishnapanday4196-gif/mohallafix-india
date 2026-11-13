@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #f8fafc;
@@ -25,9 +26,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
 }
-
-/* Leaflet map styles */
-@import "leaflet/dist/leaflet.css";
 
 /* Custom scrollbars for clean SaaS UI */
 ::-webkit-scrollbar {
