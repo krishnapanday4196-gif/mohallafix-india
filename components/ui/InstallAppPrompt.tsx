@@ -11,6 +11,18 @@ export function InstallAppPrompt() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // Register Service Worker for PWA
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("MohallaFix PWA Service Worker registered:", registration.scope);
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+
     // Check if running as installed standalone app
     const isRunningStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
