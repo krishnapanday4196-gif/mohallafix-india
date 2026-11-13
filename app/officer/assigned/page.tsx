@@ -10,7 +10,12 @@ import { formatDate } from "@/lib/utils";
 export default async function OfficerAssignedComplaintsPage() {
   const complaints = await fetchPublicComplaints({ limit: 50 });
   const assigned = complaints.filter(
-    (c) => c.status === "ASSIGNED" || c.status === "IN_PROGRESS" || c.status === "REOPENED"
+    (c) =>
+      c.status === "SUBMITTED" ||
+      c.status === "ASSIGNED" ||
+      c.status === "IN_PROGRESS" ||
+      c.status === "REOPENED" ||
+      c.status === "UNDER_REVIEW"
   );
 
   return (

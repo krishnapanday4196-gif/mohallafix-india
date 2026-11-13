@@ -52,8 +52,8 @@ export function Navbar() {
     { href: "/complaints", label: "Complaints" },
     { href: "/map", label: "Public Map" },
     { href: "/track", label: "Track" },
-    { href: "/ai", label: "AI Engine" },
-    { href: "/about", label: "About" },
+    { href: "/officer", label: "Officer Portal" },
+    { href: "/admin", label: "Admin" },
   ];
 
   const userDisplayName =

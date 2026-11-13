@@ -153,10 +153,23 @@ export async function POST(req: NextRequest) {
 
     const trackingId = generateTrackingId();
 
+    // Auto-detect department from chosen category
+    let departmentId: string | null = null;
+    const { data: catRecord } = await supabase
+      .from("complaint_categories")
+      .select("department_id")
+      .eq("id", parsed.data.category_id)
+      .maybeSingle();
+
+    if (catRecord?.department_id) {
+      departmentId = catRecord.department_id;
+    }
+
     const insertPayload = {
       tracking_id: trackingId,
       citizen_id: profile.id,
       category_id: parsed.data.category_id,
+      department_id: departmentId,
       title: parsed.data.title,
       description: parsed.data.description,
       address: parsed.data.address,

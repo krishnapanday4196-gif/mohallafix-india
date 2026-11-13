@@ -17,9 +17,14 @@ import { fetchPublicComplaints } from "@/lib/services/complaintService";
 import { formatDate } from "@/lib/utils";
 
 export default async function OfficerDashboardPage() {
-  const complaints = await fetchPublicComplaints({ limit: 10 });
+  const complaints = await fetchPublicComplaints({ limit: 20 });
   const assignedComplaints = complaints.filter(
-    (c) => c.status === "ASSIGNED" || c.status === "IN_PROGRESS"
+    (c) =>
+      c.status === "SUBMITTED" ||
+      c.status === "UNDER_REVIEW" ||
+      c.status === "ASSIGNED" ||
+      c.status === "IN_PROGRESS" ||
+      c.status === "VERIFIED"
   );
 
   return (
