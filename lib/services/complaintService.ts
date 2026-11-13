@@ -140,11 +140,11 @@ export async function fetchComplaintByIdOrTracking(idOrTracking: string): Promis
         *,
         category:complaint_categories(*),
         department:departments(*),
-        assigned_officer:officers(*, profile:profiles(*)),
+        assigned_officer:officers(*, profile:profiles!officers_profile_id_fkey(*)),
         citizen:profiles(*),
         media:complaint_media(*),
-        status_history:complaint_status_history(*),
-        comments:complaint_comments(*, author:profiles(*)),
+        status_history:complaint_status_history(*, changer:profiles!complaint_status_history_changed_by_fkey(*)),
+        comments:complaint_comments(*, author:profiles!complaint_comments_user_id_fkey(*)),
         feedback:feedback(*)
       `);
 
